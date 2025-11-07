@@ -1,0 +1,156 @@
+<p-fluid>
+    <div class="flex mt-8">
+        <form [formGroup]="companyForm" (ngSubmit)="onSubmit()" class="w-full">
+            <div class="card flex flex-col gap-6 w-full">
+                <div class="font-semibold text-xl">Create Company</div>
+
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="flex flex-wrap gap-2 w-full">
+                        <label for="fullname2">FullName*</label>
+                        <input pInputText id="fullname2" type="text" formControlName="fullName"
+                            [ngClass]="{'ng-invalid ng-dirty': isFieldInvalid('fullName')}" />
+                        <small class="text-red-500" *ngIf="isFieldInvalid('fullName')">
+                            {{getErrorMessage('fullName')}}
+                        </small>
+                    </div>
+                    <div class="flex flex-wrap gap-2 w-full">
+                        <label for="shortname2">ShortName*</label>
+                        <input pInputText id="shortname2" type="text" formControlName="shortName"
+                            [ngClass]="{'ng-invalid ng-dirty': isFieldInvalid('shortName')}" />
+                        <small class="text-red-500" *ngIf="isFieldInvalid('shortName')">
+                            {{getErrorMessage('shortName')}}
+                        </small>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="flex flex-wrap gap-2 w-full">
+                        <label for="email2">Email*</label>
+                        <input pInputText id="email2" type="email" formControlName="email"
+                            [ngClass]="{'ng-invalid ng-dirty': isFieldInvalid('email')}" />
+                        <small class="text-red-500" *ngIf="isFieldInvalid('email')">
+                            {{getErrorMessage('email')}}
+                        </small>
+                    </div>
+                    <div class="flex flex-wrap gap-2 w-full">
+                        <label for="phone2">Phone No*</label>
+                        <input pInputText id="phone2" type="text" formControlName="phone"
+                            [ngClass]="{'ng-invalid ng-dirty': isFieldInvalid('phone')}" />
+                        <small class="text-red-500" *ngIf="isFieldInvalid('phone')">
+                            {{getErrorMessage('phone')}}
+                        </small>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="flex flex-wrap gap-2 w-full">
+                        <label for="address">Address*</label>
+                        <textarea pTextarea id="address" rows="4" formControlName="address" class="w-full"
+                            placeholder="Enter complete address"
+                            [ngClass]="{'ng-invalid ng-dirty': isFieldInvalid('address')}"></textarea>
+                        <small class="text-red-500" *ngIf="isFieldInvalid('address')">
+                            {{getErrorMessage('address')}}
+                        </small>
+                    </div>
+                    <div class="flex flex-col gap-4 justify-center w-full md:w-1/3">
+                        <div class="flex items-center">
+                            <p-checkbox formControlName="isActive" [binary]="true" inputId="isActive"></p-checkbox>
+                            <label for="isActive" class="ml-2">Is Active</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <p-button type="submit" label="Submit" severity="primary"></p-button>
+                    <p-button type="button" label="Reset" severity="secondary" (onClick)="onReset()"></p-button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Company Table -->
+
+    </div>
+</p-fluid>
+
+<!-- Get Data -->
+ <div class="w-full mt-6">
+<p-table
+    #dt
+    [value]="companies"
+    [rows]="10"
+    [paginator]="true"
+    [globalFilterFields]="['fullName', 'shortName', 'email', 'phone', 'address']"
+    [tableStyle]="{ 'min-width': '75rem' }"
+    [rowHover]="true"
+    dataKey="id"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} companies"
+    [showCurrentPageReport]="true"
+    [rowsPerPageOptions]="[10, 20, 30]"
+>
+ <div class="card mt-6">
+    
+ </div>
+    <ng-template #caption>
+        <div class="flex items-center justify-between">
+            <h5 class="m-0">Companies Record</h5>
+            <p-iconfield>
+                <p-inputicon styleClass="pi pi-search" />
+                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
+            </p-iconfield>
+        </div>
+    </ng-template>
+    <ng-template #header>
+        <tr>
+           
+            <th pSortableColumn="fullName" style="min-width: 16rem">
+                Full Name
+                <p-sortIcon field="fullName" />
+            </th>
+            <th pSortableColumn="shortName" style="min-width: 16rem">
+                Short Name
+                <p-sortIcon field="shortName" />
+            </th>
+            <th pSortableColumn="email" style="min-width: 16rem">
+                Email
+                <p-sortIcon field="email" />
+            </th>
+            <th pSortableColumn="phone" style="min-width: 12rem">
+                Phone
+                <p-sortIcon field="phone" />
+            </th>
+            <th pSortableColumn="address" style="min-width: 16rem">
+                Address
+                <p-sortIcon field="address" />
+            </th>
+            <th pSortableColumn="isActive" style="min-width: 12rem">
+                Status
+                <p-sortIcon field="isActive" />
+            </th>
+            <th style="min-width: 12rem"></th>
+        </tr>
+    </ng-template>
+    <ng-template #body let-company>
+        <tr>
+           
+            <td style="min-width: 16rem">{{ company.fullName }}</td>
+            <td style="min-width: 16rem">{{ company.shortName }}</td>
+            <td style="min-width: 16rem">{{ company.email }}</td>
+            <td style="min-width: 12rem">{{ company.phone }}</td>
+            <td style="min-width: 16rem">{{ company.address }}</td>
+            <td style="min-width: 12rem">
+                <p-tag [severity]="company.isActive ? 'success' : 'danger'" 
+                       [value]="company.isActive ? 'Active' : 'Inactive'" />
+            </td>
+            <td style="min-width: 12rem">
+                <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true"  />
+                <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"  />
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template #emptymessage>
+        <tr>
+            <td colspan="8" class="text-center p-4">No companies found.</td>
+        </tr>
+    </ng-template>
+</p-table>
+ </div>

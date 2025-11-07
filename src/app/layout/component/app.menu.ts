@@ -55,13 +55,13 @@ export class AppMenu {
                         routerLink: ['/landing']
                     },
                     {
-                        label: 'Auth',
+                        label: 'Set up',
                         icon: 'pi pi-fw pi-user',
                         items: [
                             {
-                                label: 'Login',
+                                label: 'Company',
                                 icon: 'pi pi-fw pi-sign-in',
-                                routerLink: ['/auth/login']
+                                routerLink: ['/pages/company']
                             },
                             {
                                 label: 'Error',
