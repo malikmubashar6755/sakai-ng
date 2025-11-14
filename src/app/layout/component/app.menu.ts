@@ -49,29 +49,189 @@ export class AppMenu {
                 icon: 'pi pi-fw pi-briefcase',
                 routerLink: ['/pages'],
                 items: [
+                    // {
+                    //     label: 'Landing',
+                    //     icon: 'pi pi-fw pi-globe',
+                    //     routerLink: ['/landing']
+                    // },
                     {
-                        label: 'Landing',
-                        icon: 'pi pi-fw pi-globe',
-                        routerLink: ['/landing']
-                    },
-                    {
-                        label: 'Set up',
-                        icon: 'pi pi-fw pi-user',
+                        label: 'Settings',
+                        icon: 'pi pi-fw pi-cog',
                         items: [
                             {
                                 label: 'Company',
-                                icon: 'pi pi-fw pi-sign-in',
+                                icon: 'pi pi-fw pi-building',
                                 routerLink: ['/pages/company']
                             },
                             {
-                                label: 'Error',
-                                icon: 'pi pi-fw pi-times-circle',
-                                routerLink: ['/auth/error']
+                                label: 'Department',
+                                icon: 'pi pi-fw pi-th-large',
+                                routerLink: ['/pages/department']
                             },
                             {
-                                label: 'Access Denied',
-                                icon: 'pi pi-fw pi-lock',
-                                routerLink: ['/auth/access']
+                                label: 'Designation',
+                                icon: 'pi pi-fw pi-id-card',
+                                routerLink: ['/pages/designation']
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Employee Management',
+                        icon: 'pi pi-fw pi-users',
+                        items: [
+                            {
+                                label: 'Employee',
+                                icon: 'pi pi-fw pi-user',
+                                routerLink: ['/pages/employee']
+                            },
+                            {
+                                label: 'Gender',
+                                icon: 'pi pi-fw pi-arrows-h',
+                                routerLink: ['/pages/gender']
+                            },
+                            {
+                                label: 'Resignation',
+                                icon: 'pi pi-fw pi-sign-out',
+                                routerLink: ['/pages/resignation']
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Leave Management',
+                        icon: 'pi pi-fw pi-calendar',
+                        items: [
+                            {
+                                label: 'Leave',
+                                icon: 'pi pi-fw pi-calendar-plus',
+                                routerLink: ['/pages/leave']
+                            },
+                            {
+                                label: 'LeaveType',
+                                icon: 'pi pi-fw pi-tags',
+                                routerLink: ['/pages/leavetype']
+                            },
+                            {
+                                label: 'Holiday',
+                                icon: 'pi pi-fw pi-sun',
+                                routerLink: ['/pages/holiday']
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Time Tracking',
+                        icon: 'pi pi-fw pi-clock',
+                        items: [
+                            {
+                                label: 'Shift',
+                                icon: 'pi pi-fw pi-calendar',
+                                routerLink: ['/pages/shift']
+                            },
+                            {
+                                label: 'EmployeeShift',
+                                icon: 'pi pi-fw pi-user-plus',
+                                routerLink: ['/pages/employeeshift']
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Training & Development',
+                        icon: 'pi pi-fw pi-graduation-cap',
+                        items: [
+                            {
+                                label: 'Training',
+                                icon: 'pi pi-fw pi-book',
+                                routerLink: ['/pages/training']
+                            },
+                            {
+                                label: 'EmployeeTraining',
+                                icon: 'pi pi-fw pi-id-card',
+                                routerLink: ['/pages/employeetraining']
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Performance Management',
+                        icon: 'pi pi-fw pi-graduation-cap',
+                        items: [
+                            {
+                                label: 'PerformanceReview',
+                                icon: 'pi pi-fw pi-id-card',
+                                routerLink: ['/pages/employeetraining']
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Attendance ',
+                        icon: 'pi pi-fw pi-graduation-cap',
+                        items: [
+                            {
+                                label: 'Attendance',
+                                icon: 'pi pi-fw pi-id-card',
+                                routerLink: ['/pages/employeetraining']
+                            },
+                            {
+                                label: 'AttendanceStatus',
+                                icon: 'pi pi-fw pi-id-card',
+                                routerLink: ['/pages/employeetraining']
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Payroll',
+                        icon: 'pi pi-fw pi-graduation-cap',
+                        items: [
+                            {
+                                label: 'Payroll',
+                                icon: 'pi pi-fw pi-id-card',
+                                routerLink: ['/pages/employeetraining']
+                            },
+                            {
+                                label: 'Salary',
+                                icon: 'pi pi-fw pi-id-card',
+                                routerLink: ['/pages/employeetraining']
+                            }
+                        ]
+                    },
+                    {
+                        label: 'User Management',
+                        icon: 'pi pi-fw pi-users',
+                        items: [
+                            {
+                                label: 'User',
+                                icon: 'pi pi-fw pi-user',
+                                routerLink: ['/pages/employeetraining']
+                            },
+                            {
+                                label: 'Role',
+                                icon: 'pi pi-fw pi-shield',
+                                routerLink: ['/pages/employeetraining']
+                            },
+                            {
+                                label: 'UserRole',
+                                icon: 'pi pi-fw pi-link',
+                                routerLink: ['/pages/employeetraining']
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Announcements',
+                        icon: 'pi pi-fw pi-graduation-cap',
+                        items: [
+                            {
+                                label: 'Announcements',
+                                icon: 'pi pi-fw pi-id-card',
+                                routerLink: ['/pages/employeetraining']
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Expense Claims',
+                        icon: 'pi pi-fw pi-graduation-cap',
+                        items: [
+                            {
+                                label: 'ExpenseClaim',
+                                icon: 'pi pi-fw pi-id-card',
+                                routerLink: ['/pages/employeetraining']
                             }
                         ]
                     },
