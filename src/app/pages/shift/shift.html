@@ -1,1 +1,132 @@
-<p>shift works!</p>
+<p-fluid>
+    <div class="flex flex-col mt-8 gap-6">
+        <form class="w-full" [formGroup]="shiftForm" (ngSubmit)="onSubmit()">
+            <div class="card flex flex-col gap-6 w-full">
+                <div class="font-semibold text-xl">Create Shift</div>
+
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="flex flex-wrap gap-2 w-full">
+                        <label for="shiftName">Shift Name*</label>
+                        <input pInputText id="shiftName" type="text" formControlName="Name"
+                            [ngClass]="{'ng-invalid ng-dirty': isFieldInvalid('Name')}" />
+                        <small class="text-red-500" *ngIf="isFieldInvalid('Name')">
+                            {{getErrorMessage('Name')}}
+                        </small>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="flex flex-wrap gap-2 w-full">
+                        <label for="startTime">Start Time*</label>
+                        <p-inputGroup>
+                            <p-inputGroupAddon>
+                                <i class="pi pi-clock"></i>
+                            </p-inputGroupAddon>
+                            <input pInputText id="startTime" type="time" formControlName="StartTime"
+                                [ngClass]="{'ng-invalid ng-dirty': isFieldInvalid('StartTime')}" />
+                        </p-inputGroup>
+                        <small class="text-red-500" *ngIf="isFieldInvalid('StartTime')">
+                            {{getErrorMessage('StartTime')}}
+                        </small>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-2 w-full">
+                        <label for="endTime">End Time*</label>
+                        <p-inputGroup>
+                            <p-inputGroupAddon>
+                                <i class="pi pi-clock"></i>
+                            </p-inputGroupAddon>
+                            <input pInputText id="endTime" type="time" formControlName="EndTime"
+                                [ngClass]="{'ng-invalid ng-dirty': isFieldInvalid('EndTime')}" />
+                        </p-inputGroup>
+                        <small class="text-red-500" *ngIf="isFieldInvalid('EndTime')">
+                            {{getErrorMessage('EndTime')}}
+                        </small>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="flex flex-col gap-4 justify-center w-full">
+                        <div class="flex items-center">
+                            <p-checkbox formControlName="IsActive" [binary]="true" inputId="isActive"></p-checkbox>
+                            <label for="isActive" class="ml-2">Is Active</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <p-button type="submit" label="Submit" severity="primary"></p-button>
+                    <p-button type="button" label="Reset" severity="secondary" (onClick)="onReset()"></p-button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Shift Table -->
+        <div class="w-full mt-6">
+            <p-table
+                #dt
+                [value]="shifts"
+                [rows]="10"
+                [paginator]="true"
+                [globalFilterFields]="['Name', 'StartTime', 'EndTime']"
+                [tableStyle]="{ 'min-width': '75rem' }"
+                [rowHover]="true"
+                dataKey="id"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} shifts"
+                [showCurrentPageReport]="true"
+                [rowsPerPageOptions]="[10, 20, 30]"
+            >
+                <ng-template #caption>
+                    <div class="flex items-center justify-between">
+                        <h5 class="m-0">Shifts Record</h5>
+                        <p-iconfield>
+                            <p-inputicon styleClass="pi pi-search" />
+                            <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
+                        </p-iconfield>
+                    </div>
+                </ng-template>
+                <ng-template #header>
+                    <tr>
+                        <th pSortableColumn="Name" style="min-width: 16rem">
+                            Shift Name
+                            <p-sortIcon field="Name" />
+                        </th>
+                        <th pSortableColumn="StartTime" style="min-width: 12rem">
+                            Start Time
+                            <p-sortIcon field="StartTime" />
+                        </th>
+                        <th pSortableColumn="EndTime" style="min-width: 12rem">
+                            End Time
+                            <p-sortIcon field="EndTime" />
+                        </th>
+                        <th pSortableColumn="IsActive" style="min-width: 10rem">
+                            Status
+                            <p-sortIcon field="IsActive" />
+                        </th>
+                        <th style="min-width: 12rem">Actions</th>
+                    </tr>
+                </ng-template>
+                <ng-template #body let-shift>
+                    <tr>
+                        <td style="min-width: 16rem">{{ shift.Name }}</td>
+                        <td style="min-width: 12rem">{{ shift.StartTime }}</td>
+                        <td style="min-width: 12rem">{{ shift.EndTime }}</td>
+                        <td style="min-width: 10rem">
+                            <p-tag [severity]="shift.IsActive ? 'success' : 'danger'" 
+                                   [value]="shift.IsActive ? 'Active' : 'Inactive'" />
+                        </td>
+                        <td style="min-width: 12rem">
+                            <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" />
+                            <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" />
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template #emptymessage>
+                    <tr>
+                        <td colspan="5" class="text-center p-4">No shifts found.</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+</p-fluid>

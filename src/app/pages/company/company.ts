@@ -14,15 +14,10 @@ import { TagModule } from 'primeng/tag';
 import { InputIcon } from "primeng/inputicon";
 import { IconField } from "primeng/iconfield";
 
-interface ICompany {
-  fullName: string;
-  shortName: string;
-  email: string;
-  phone: string;
-  address: string;
-  isActive: boolean;
-}
-
+import { CompanyService } from '@/services/company-service';
+import { Companies, NewCompany, UpdateCompany } from '@/models.ts/companies';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 @Component({
   selector: 'app-company',
   standalone: true,
@@ -39,15 +34,21 @@ interface ICompany {
     TableModule,
     TagModule,
     InputIcon,
+    ToastModule,
     IconField
 ],
+providers: [
+    MessageService // <--- ADD THIS LINE
+  ],
   templateUrl: './company.html',
   styleUrls: ['./company.scss']
 })
 export class Company implements OnInit {
   companyForm!: FormGroup;
   submitted = false;
-  companies: ICompany[] = [];
+  companies: Companies[] = [];
+  editingCompanyId: number | null = null;
+  loading = false;
     @ViewChild('dt') dt: Table | undefined;
 
     onGlobalFilter(table: Table, event: Event) {
@@ -55,76 +56,116 @@ export class Company implements OnInit {
       table.filterGlobal(searchTerm, 'contains');
     }
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private companyService: CompanyService,private service: MessageService) {}
 
   ngOnInit() {
     this.companyForm = this.fb.group({
-      fullName: ['', [Validators.required]],
+      name: ['', [Validators.required]],
       shortName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
+     phone: ['', [Validators.required, Validators.pattern('^[0-9]{11}$')]],
       address: ['', [Validators.required, Validators.minLength(10)]],
       isActive: [false]
     });
-
+this.getAllCompanies();
     // Initialize with dummy data
-    this.companies = [
-      {
-        fullName: 'Tech Solutions International',
-        shortName: 'TSI',
-        email: 'info@techsolutions.com',
-        phone: '9876543210',
-        address: '123 Innovation Drive, Tech Park, Silicon Valley, CA 94025',
-        isActive: true
-      },
-      {
-        fullName: 'Global Data Systems',
-        shortName: 'GDS',
-        email: 'contact@gds.com',
-        phone: '8765432109',
-        address: '456 Data Center Road, Business Hub, New York, NY 10001',
-        isActive: true
-      },
-      {
-        fullName: 'Innovative Software Solutions',
-        shortName: 'ISS',
-        email: 'info@innosoft.com',
-        phone: '7654321098',
-        address: '789 Software Avenue, Tech District, Austin, TX 78701',
-        isActive: false
-      },
-      {
-        fullName: 'Digital Dynamics Corporation',
-        shortName: 'DDC',
-        email: 'contact@digidyn.com',
-        phone: '6543210987',
-        address: '321 Digital Boulevard, Cyber City, Seattle, WA 98101',
-        isActive: true
-      },
-      {
-        fullName: 'Smart Systems Ltd',
-        shortName: 'SSL',
-        email: 'info@smartsys.com',
-        phone: '5432109876',
-        address: '567 Smart Street, Innovation Park, Boston, MA 02108',
-        isActive: false
-      }
-    ];
+  
   }
+ getAllCompanies() {
+  this.loading = true;
+    this.companyService.getAllCompanies().subscribe(res => {
+      this.companies = res.data;
+      console.log('Data coming from api', this.companies);
+    });
+  }
+onEdit(company: Companies) {
+  // Set the ID to track which company we are editing
+  this.editingCompanyId = company.id; 
 
-  onSubmit() {
-    this.submitted = true;
+  // Populate the form with the selected company's data
+  this.companyForm.patchValue({
+    name: company.name,
+    shortName: company.shortName,
+    address: company.address,
+    isActive: company.isActive,
+    // Note: Mapped to 'email' and 'phone' form controls based on your HTML
+    email: company.contactEmail, 
+    phone: company.contactPhone,
+    // createdBy is often excluded from the form, but keep it if required for update payload
+    // createdBy: company.createdBy 
+  });
+
+  // Scroll to the form area if necessary
+  window.scrollTo(0, 0); 
+}
+onSubmit() {
+  debugger;
+  this.submitted = true;
+  // 1. Check form validity first for BOTH create and update
+  if (this.companyForm.valid) {
     
-    if (this.companyForm.valid) {
-      const newCompany: ICompany = this.companyForm.value;
-      this.companies.push(newCompany);
-      this.onReset();
-      console.log('Companies:', this.companies);
+    // 2. Decide between update and create inside the valid block
+    if (this.editingCompanyId != null) {
+      // --- Update Logic: Call the separate onUpdate method ---
+      this.onUpdate(); 
+      // No 'return' needed here, as the subscription handles the completion
+      
     } else {
-      this.markFormGroupTouched(this.companyForm);
+      // --- Create Logic: (Your existing code) ---
+      const newCompany: NewCompany = { 
+        name: this.companyForm.value.name,
+        shortName: this.companyForm.value.shortName,
+        address: this.companyForm.value.address,
+        isActive: this.companyForm.value.isActive,
+        contactEmail: this.companyForm.value.email, 
+        contactPhone: this.companyForm.value.phone,
+        createdBy: 'malik' 
+      };
+      
+      this.companyService.createCompany(newCompany).subscribe({ 
+        next: (response) => {
+       const messageDetail: string = (response.data as unknown as string) || 'Company created successfully.';
+        this.service.add({ severity: 'success', summary: 'Success', detail: messageDetail });
+          this.onReset();
+          this.getAllCompanies(); 
+        },
+        error: (err) => {
+          console.error('Error creating company:', err);
+        }
+      });
     }
+  } else {
+    // 3. Handle invalid form (applies to both create and update)
+    this.markFormGroupTouched(this.companyForm);
+    
+    // Optional: Add a console warning for clarity
+    console.warn('Form is invalid. Cannot submit or update.');
   }
+}
 
+onUpdate() {
+  const updatedCompany: UpdateCompany = {
+    id: this.editingCompanyId!,
+    name: this.companyForm.value.name,
+    shortName: this.companyForm.value.shortName,
+    address: this.companyForm.value.address,
+    isActive: this.companyForm.value.isActive,
+    contactEmail: this.companyForm.value.email,
+    contactPhone: this.companyForm.value.phone,
+    updatedBy: 'malik' 
+  };
+  this.companyService.updateCompany(updatedCompany.id, updatedCompany).subscribe({
+    next: (response) => {
+       const messageDetail: string = (response.data as unknown as string) || 'Company updated successfully.';
+        this.service.add({ severity: 'success', summary: 'Success', detail: messageDetail });
+      this.onReset();
+      this.getAllCompanies();
+    },
+    error: (err) => {
+      console.error('Error updating company:', err);
+    }
+  });
+}
   onReset() {
     this.submitted = false;
     this.companyForm.reset({
