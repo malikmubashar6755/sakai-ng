@@ -1,0 +1,35 @@
+.profile-image-container {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--primary-color, #1e90ff);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--surface-d);
+    position: relative;
+    flex-shrink: 0; /* Prevent the circle from shrinking */
+
+    .profile-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .default-avatar {
+        font-size: 3rem;
+        color: var(--text-color-secondary);
+    }
+     .reset-icon {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 24px;
+        height: 24px;
+        z-index: 10;
+    }
+}
+

@@ -1,1 +1,200 @@
-<p>employee works!</p>
+<p-fluid>
+    <p-toast></p-toast>
+    <p-toolbar styleClass="mb-6">
+        <ng-template #start>
+            <p-button label="New Employee" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+        </ng-template>
+
+        <ng-template #end>
+            <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
+        </ng-template>
+    </p-toolbar>
+
+    <p-table #dt [value]="employees" [columns]="cols" [rows]="10" [paginator]="true"
+        [globalFilterFields]="['firstName', 'lastName', 'empCode', 'email']" [tableStyle]="{ 'min-width': '75rem' }"
+        [rowHover]="true" dataKey="id" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} employees"
+        [showCurrentPageReport]="true">
+
+        <ng-template #caption>
+            <div class="flex items-center justify-between">
+                <h5 class="m-0"> Employees</h5>
+                <p-iconfield>
+                    <p-inputicon styleClass="pi pi-search" />
+                    <input pInputText type="text" (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                        placeholder="Search..." />
+                </p-iconfield>
+            </div>
+        </ng-template>
+
+        <ng-template #header>
+            <tr>
+                <th style="min-width: 10rem" pSortableColumn="empCode">Emp Code <p-sortIcon field="empCode" /></th>
+                <th style="min-width:14rem" pSortableColumn="firstName">Employee Name <p-sortIcon field="firstName" /></th>
+                <th>Email</th>
+                   <th>Mobile No</th>
+                      <th>Gender</th>
+                <th>Department</th>
+                <th>Designation</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </ng-template>
+
+        <ng-template #body let-employee>
+            <tr>
+                <td>{{ employee.empCode }}</td>
+                <td>{{ employee.firstName }} {{ employee.lastName }}</td>
+                <td>{{ employee.email }}</td>
+                 <td>{{ employee.mobileNo }}</td>
+                  <td>{{ employee.gender?.name }}</td>
+                <td>{{ employee.department?.name }}</td>
+                <td>{{ employee.desgination?.title }}</td>
+                <td>
+                    <p-tag [value]="employee.isActive ? 'Active' : 'Inactive'"
+                        [severity]="employee.isActive ? 'success' : 'danger'" />
+                </td>
+                <td>
+                    <p-button icon="pi pi-pencil" [rounded]="true" [outlined]="true" severity="success" class="mr-2"
+                        (onClick)="editEmployee(employee)" />
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+
+
+    <p-dialog [(visible)]="employeeDialog" [style]="{ width: '700px' }" header="Employee Details" [modal]="true">
+        <ng-template #content>
+            <form [formGroup]="employeeForm">
+
+                <div class="flex justify-content-center mb-6 align-items-center gap-4">
+                    <div class="profile-image-container">
+                        <!-- Display uploaded image or default avatar -->
+                        <img *ngIf="imageUrl; else defaultAvatar" [src]="imageUrl" class="profile-image"
+                            alt="Employee Photo" />
+                        <ng-template #defaultAvatar>
+                            <i class="pi pi-user default-avatar"></i>
+                        </ng-template>
+
+                        <!-- Small reset icon inside circle (top-right corner) -->
+                        <button *ngIf="imageUrl" class="reset-icon" (click)="resetImage()" pButton pRipple type="button"
+                            icon="pi pi-times" styleClass="p-button-rounded p-button-danger p-button-sm">
+                        </button>
+                    </div>
+
+                    <!-- Upload button only -->
+                    <div class="upload-button-container">
+                        <p-button icon="pi pi-upload" label="Upload Photo" (onClick)="fileInput.click()"
+                            styleClass="p-button-sm">
+                        </p-button>
+                        <input #fileInput type="file" accept="image/*" (change)="onImageSelect($event)"
+                            style="display: none">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <div class="field flex flex-col gap-2">
+                        <label for="firstName" class="font-bold">First Name</label>
+                        <input type="text" pInputText id="firstName" formControlName="firstName" class="w-full" />
+                        <small class="text-red-500" *ngIf="employeeForm.get('firstName')?.invalid && submitted">First
+                            Name
+                            is required.</small>
+                    </div>
+
+                    <div class="field flex flex-col gap-2">
+                        <label for="lastName" class="font-bold">Last Name</label>
+                        <input type="text" pInputText id="lastName" formControlName="lastName" class="w-full" />
+                        <small class="text-red-500" *ngIf="employeeForm.get('lastName')?.invalid && submitted">Last Name
+                            is
+                            required.</small>
+                    </div>
+
+                    <!-- <div class="field flex flex-col gap-2">
+                    <label for="empCode" class="font-bold">Emp Code</label>
+                    <input type="text" pInputText id="empCode" formControlName="empCode" class="w-full" />
+                </div> -->
+
+                    <div class="field flex flex-col gap-2">
+                        <label for="email" class="font-bold">Email</label>
+                        <input type="email" pInputText id="email" formControlName="email" class="w-full" />
+                    </div>
+
+                    <div class="field flex flex-col gap-2">
+                        <label for="mobileNo" class="font-bold">Mobile No</label>
+                        <input type="text" pInputText id="mobileNo" formControlName="mobileNo" class="w-full" />
+                    </div>
+
+                    <div class="field flex flex-col gap-2">
+                        <label for="cnic" class="font-bold">CNIC</label>
+                        <input type="text" pInputText id="cnic" formControlName="cnic" class="w-full" />
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 w-full">
+                        <label for="departmentId" class="font-semibold">Department</label>
+                        <p-select formControlName="departmentId" [options]="departments" optionLabel="name"
+                            optionValue="id" placeholder="Select Department" [loading]="loading"
+                            [ngClass]="{'ng-invalid ng-dirty': isFieldInvalid('departmentId')}" styleClass="w-full">
+                        </p-select>
+                        <small class="text-red-500" *ngIf="isFieldInvalid('departmentId')">
+                            {{getErrorMessage('departmentId')}}
+                        </small>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 w-full">
+                        <label for="designation" class="font-semibold">Designation</label>
+                        <p-select formControlName="designationId" [options]="designations" optionLabel="title"
+                            optionValue="id" placeholder="Select Designation" [loading]="loading"
+                            [ngClass]="{'ng-invalid ng-dirty': isFieldInvalid('designationId')}" styleClass="w-full">
+                        </p-select>
+                        <small class="text-red-500" *ngIf="isFieldInvalid('designationId')">
+                            {{getErrorMessage('designationId')}}
+                        </small>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 w-full">
+                        <label for="gender" class="font-semibold">Gender</label>
+                        <p-select formControlName="genderId" [options]="genders" optionLabel="name" optionValue="id"
+                            placeholder="Select Gender" [loading]="loading"
+                            [ngClass]="{'ng-invalid ng-dirty': isFieldInvalid('genderId')}" styleClass="w-full">
+                        </p-select>
+                        <small class="text-red-500" *ngIf="isFieldInvalid('genderId')">
+                            {{getErrorMessage('genderId')}}
+                        </small>
+                    </div>
+
+
+
+                    <div class="field flex flex-col gap-2">
+                        <label for="dob" class="font-bold">Date of Birth</label>
+                        <p-datepicker formControlName="dob" appendTo="body" styleClass="w-full"
+                            [style]="{'width':'100%'}" inputId="dob" dateFormat="dd/mm/yy" />
+                    </div>
+
+                    <div class="field flex flex-col gap-2">
+                        <label for="hireDate" class="font-bold">Hire Date</label>
+                        <p-datepicker formControlName="hireDate" appendTo="body" styleClass="w-full"
+                            [style]="{'width':'100%'}" inputId="hireDate" [showTime]="true" [hourFormat]="'12'"
+                            dateFormat="dd/mm/yy" />
+                    </div>
+
+                    <div class="field flex flex-col gap-2 md:col-span-2">
+                        <label for="address" class="font-bold">Address</label>
+                        <textarea id="address" pInputTextarea formControlName="address" rows="3"
+                            class="w-full"></textarea>
+                    </div>
+                    <div class="flex items-center">
+                        <p-checkbox formControlName="isActive" [binary]="true" inputId="isActive"></p-checkbox>
+                        <label for="isActive" class="ml-2">Is Active</label>
+                    </div>
+
+                </div>
+            </form>
+        </ng-template>
+
+        <ng-template #footer>
+            <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />
+            <p-button label="Save" icon="pi pi-check" (click)="onSubmit()" />
+        </ng-template>
+    </p-dialog>
+
+    <p-confirmdialog [style]="{ width: '450px' }" />
+</p-fluid>

@@ -18,6 +18,6 @@ export class Departmentservice {
       return this.http.post<ApiResponse<CreateDepartment>>(`${this.apiUrl}/CreateDepartment`, dept);
     }
     updateDepartment(id: number, dept: UpdateDepartment): Observable<ApiResponse<string>> {
-      return this.http.put<ApiResponse<string>>(`${this.apiUrl}/UpdateCompany?Id=${id}`, dept);
+      return this.http.put<ApiResponse<string>>(`${this.apiUrl}/UpdateDepartment?Id=${id}`, dept);
     }
 }
